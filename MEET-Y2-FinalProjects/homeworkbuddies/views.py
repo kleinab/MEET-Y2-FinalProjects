@@ -1,12 +1,14 @@
 from django.shortcuts import render
-from homeworkbuddies.models import Student, Subject, Assignment
+from homeworkbuddies.models import Student, Subject, Assignment, Message
+import datetime
+from django.utils import timezone
 
 def index(request):
     if 'student_id' not in request.session:
         return login(request)
     student = Student.objects.get(id=request.session['student_id'])
     subjects = Subject.objects.filter(students=student)
-    assignments = [(subject, Assignment.objects.filter(subject=subject)) for subject in subjects]
+    assignments = [(subject, Assignment.objects.filter(subject=subject).order_by('-duedate')) for subject in subjects]
     return render(request, 'homeworkbuddies/index.html', {'student': student, 'assignments': assignments});
 
 def login(request):
@@ -43,29 +45,19 @@ def logout(request):
         del request.session['student_id']
     return login(request)
 
-def new_subject(request):
-    if request.method == 'GET':
-        if 'student_id' not in request.session:
-            return login(request)
-        students = Student.objects.all()
-        return render(request, 'homeworkbuddies/new_subject.html', {'students': students})
-    else:
-        name = request.POST['name']
-        students = request.POST['students']
-        subject = Subject(name=name, students=students)
-        subject.save()
-        return render(request, 'homeworkbuddies/index.html')
+def view_assignment(request, assignment_id):
+    if 'student_id' not in request.session:
+        return login(request)
+    student = Student.objects.get(id=request.session['student_id'])
+    assignment = Assignment.objects.get(id=assignment_id)
+    messages = Message.objects.filter(assignment=assignment).order_by('-date')
+    return render(request, 'homeworkbuddies/assignment.html', {'student': student, 'assignment': assignment, 'messages': messages})
 
-def new_assignment(request):
-    if request.method == 'GET':
-        if 'student_id' not in request.session:
-            return login(request)
-        subjects = Subject.objects.all()
-        return render(request, 'homeworkbuddies/new_assignment.html', {'subjects': subjects})
-    else:
-        name = request.POST['name']
-        subject = Subject.objects.get(name=request.POST['subject'])
-        duedate = request.POST['duedate']
-        assignment = Assignment(name=name, subject=subject, duedate=duedate)
-        assignment.save()
-        return render(request, 'homeworkbuddies/index.html')
+def post_message(request, assignment_id):
+    author = Student.objects.get(id=request.session['student_id'])
+    assignment = Assignment.objects.get(id=assignment_id)
+    text = request.POST['text']
+    date = timezone.now()
+    message = Message(author=author, assignment=assignment, text=text, date=date)
+    message.save()
+    return view_assignment(request, assignment_id)    

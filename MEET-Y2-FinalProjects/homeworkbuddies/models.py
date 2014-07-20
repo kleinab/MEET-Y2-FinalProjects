@@ -20,3 +20,9 @@ class Assignment(models.Model):
     duedate = models.DateTimeField()
     def __unicode__(self):
         return self.name
+
+class Message(models.Model):
+    author = models.ForeignKey(Student)
+    assignment = models.ForeignKey(Assignment)
+    text = models.TextField()
+    date = models.DateTimeField()

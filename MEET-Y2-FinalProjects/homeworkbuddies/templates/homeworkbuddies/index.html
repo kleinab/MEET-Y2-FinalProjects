@@ -6,7 +6,10 @@
     <strong>{{ subject.name }}</strong>
     <ul>
     {% for assignment in subject_assignments %}
-      <li>{{ assignment.name }}</li>
+      <li>
+        <a href="{% url 'homeworkbuddies:view_assignment' assignment.id %}">{{ assignment.name }}</a>
+         - <i>{{ assignment.duedate }}</i>
+      </li>
     {% endfor %}
     </ul>
   </li>

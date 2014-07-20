@@ -1,0 +1,17 @@
+<h1>{{ assignment.name }}</h1>
+<h3>Due {{ assignment.duedate }}</h3>
+
+<form action="{% url 'homeworkbuddies:post_message' assignment.id %}" method="post">
+{% csrf_token %}
+  <textarea name="text" cols='100' rows='10'></textarea><br />
+  <input type="submit" value="Submit" />
+</form>
+
+{% for message in messages %}
+<p>
+<b><i>{{ message.author.username }}</i></b> -- <i>{{ message.date }}</i><br />
+{{ message.text }}
+</p>
+{% endfor %}
+
+<a href="{% url 'homeworkbuddies:index' %}">Home</a>
