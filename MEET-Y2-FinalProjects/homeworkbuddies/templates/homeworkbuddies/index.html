@@ -1,0 +1,16 @@
+<h1>Your assignments</h1>
+
+<ul>
+{% for subject, subject_assignments in assignments %}
+  <li>
+    <strong>{{ subject.name }}</strong>
+    <ul>
+    {% for assignment in subject_assignments %}
+      <li>{{ assignment.name }}</li>
+    {% endfor %}
+    </ul>
+  </li>
+{% endfor %}
+</ul>
+
+<a href="{% url 'homeworkbuddies:logout' %}">Log out</a>

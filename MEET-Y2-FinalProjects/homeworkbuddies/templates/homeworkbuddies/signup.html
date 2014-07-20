@@ -1,0 +1,11 @@
+<h1>Signup Page</h1>
+
+<h3>{{ error_message }}</h3>
+
+<form action="{% url 'homeworkbuddies:signup' %}" method="post">
+{% csrf_token %}
+  Username: <input type="text" name="username" /><br />
+  Password: <input type="password" name="password0" /><br />
+  Retype Password: <input type="password" name="password1" /><br />
+  <input type="submit" value="Sign up" />
+</form>
